@@ -29,7 +29,7 @@ nb plugin install nonebot-plugin-weather
 git clone https://github.com/aikun-China/nonebot-plugin-weather.git
 ```
 
-将插件文件夹放入 Zhenxun Bot 的 `plugin` 目录下，重启 Bot 即可。
+将插件文件夹放入 Zhenxun Bot 的plugin目录下，重启 Bot 即可。
 
 ## ⚙️ 配置
 
