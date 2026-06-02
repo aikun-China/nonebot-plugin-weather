@@ -21,7 +21,7 @@ from . import api
 __plugin_meta__ = PluginMetadata(
     name="天气查询",
     description="和风天气查询，支持实时/预报/预警/空气质量/定时订阅",
-    usage="/天气 [城市] | /天气 预报 [城市] [天数] | /天气 订阅 [城市] [HH:MM] | /天气 取消订阅",
+    usage="/天气 [城市] | /天气 [城市] [天数] | /天气 订阅 [城市] [HH:MM] | /天气 取消订阅",
     extra=PluginExtraData(
         author="aikun-China",
         version="0.7.0",
@@ -329,18 +329,13 @@ async def handle_weather(bot: Bot, event: MessageEvent, args: Message = CommandA
 
 # ... existing code ...
     # ===== ✅ 预报模式 =====
-    if parts and parts[0] in ["预报", "预告", "forecast"]:
-        city = parts[1] if len(parts) > 1 else default_city
-        days = 3  # 默认 3 天
-        if len(parts) > 2:
-            try:
-                days = min(max(int(parts[2]), 1), 7)
-            except (ValueError, IndexError):
-                days = 3
+        # --- 判断是预报还是实时 ---
+    # 如果最后一个部分是纯数字（1-7）且前面有内容，视为预报
+    if len(parts) >= 2 and parts[-1].isdigit():
+        days = min(max(int(parts[-1]), 1), 7)
+        city = " ".join(parts[:-1]) if len(parts) > 1 else default_city
 
         forecasts = await api.get_forecast(city, days, api_key, api_host)
-        # Deleted:warnings = await api.get_warnings(city, api_key, api_host)
-
         if not forecasts:
             await weather_cmd.finish(f"❌ 获取「{city}」{days}天预报失败")
 
@@ -483,12 +478,12 @@ async def check_subscriptions():
             continue
         try:
             weather_data = await api.get_weather(sub["city"], api_key, api_host)
-            warnings = await api.get_warnings(sub["city"], api_key, api_host)
+            # Deleted:warnings = await api.get_warnings(sub["city"], api_key, api_host)
             air = await api.get_air_quality(sub["city"], api_key, api_host)
             if not weather_data:
                 continue
 
-            html = generate_now_html(weather_data, warnings, air)
+            html = generate_now_html(weather_data, air)
             require("nonebot_plugin_htmlrender")
             from nonebot_plugin_htmlrender import html_to_pic
             img_bytes = await html_to_pic(html=html, viewport={"width": 480, "height": 10})
