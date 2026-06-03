@@ -31,7 +31,7 @@ nb plugin install nonebot-plugin-weather
 git clone https://github.com/aikun-China/nonebot-plugin-weather.git
 ```
 
-将插件文件夹放入 Zhenxun Bot 的 `extensive_plugin` 或 `my_plugins` 目录下，重启 Bot 即可。
+将插件文件夹放入 Zhenxun Bot 的 `zhenxun/plugins` 目录下，重启 Bot 即可。
 
 ## ⚙️ 配置
 
@@ -100,11 +100,10 @@ nonebot-plugin-weather/
 ├── api.py               # 和风天气 API 封装（实时 / 预报 / 空气质量 / 城市 ID 查询）
 ├── config.py            # 插件配置定义（Zhenxun 注册配置）
 ├── requirements.txt     # 依赖列表
-├── .gitignore           # Git 忽略规则（已排除 __pycache__ 等）
+├── .gitignore           # Git 忽略规则
 └── LICENSE              # MIT 协议
 ```
 
-> ⚠️ **注意**：请勿将 `__pycache__/` 等缓存目录提交到仓库。本项目已配置 `.gitignore` 进行排除。
 
 ## 🔧 技术细节
 
