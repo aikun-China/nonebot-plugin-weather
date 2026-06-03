@@ -3,7 +3,7 @@ nonebot-plugin-weather
 Zhenxun Bot weather subscription and warning push plugin.
 """
 
-from nonebot import on_command, require, logger
+from nonebot import on_command, require, logger, get_bot
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, GroupMessageEvent, MessageSegment
 from nonebot.params import CommandArg
 from nonebot.adapters import Message
@@ -432,45 +432,7 @@ async def check_subscriptions():
     if not api_key or not api_host:
         return
     try:
-        bot = require("nonebot").get_bot()
-    except Exception:
-        return
-    for uid, sub in list(_subscriptions.items()):
-        if sub.get("time") != current_time:
-            continue
-        try:
-            weather_data = await api.get_weather(sub["city"], api_key, api_host)
-            # Deleted:warnings = await api.get_warnings(sub["city"], api_key, api_host)
-            air = await api.get_air_quality(sub["city"], api_key, api_host)
-            if not weather_data:
-                continue
-
-            html = generate_now_html(weather_data, air)
-            require("nonebot_plugin_htmlrender")
-            from nonebot_plugin_htmlrender import html_to_pic
-            img_bytes = await html_to_pic(html=html, viewport={"width": 480, "height": 10})
-
-            group_id = sub.get("group_id", "")
-            if group_id:
-                await bot.send_group_msg(group_id=int(group_id), message=MessageSegment.image(img_bytes))
-            else:
-                await bot.send_private_msg(user_id=int(uid), message=MessageSegment.image(img_bytes))
-        except Exception as e:
-            logger.error(f"[Weather] 推送失败 {uid}: {e}")
-    now = datetime.now()
-    current_time = f"{now.hour:02d}:{now.minute:02d}"
-    if not _subscriptions:
-        return
-    try:
-        base_config = Config.get("nonebot_plugin_weather") or {}
-    except Exception:
-        return
-    api_key = base_config.get("API_KEY", "")
-    api_host = base_config.get("API_HOST", "")
-    if not api_key or not api_host:
-        return
-    try:
-        bot = require("nonebot").get_bot()
+        bot = get_bot()
     except Exception:
         return
     for uid, sub in list(_subscriptions.items()):
